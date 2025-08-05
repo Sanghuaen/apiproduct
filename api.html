@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายการสินค้าจาก Fake Store API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-card img {
+            max-width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 15px;
+        }
+        .product-card h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #555;
+        }
+        .product-card p {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .product-card .price {
+            font-size: 1.5em;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>รายการสินค้าจาก Fake Store API</h1>
+        <div id="product-list">
+            </div>
+    </div>
+    
+    <script>
+        // กำหนด URL ของ API
+        const apiUrl = 'https://fakestoreapi.com/products';
+
+        // อ้างอิงถึง element ที่จะใช้แสดงรายการสินค้า
+        const productList = document.getElementById('product-list');
+
+        // ฟังก์ชันสำหรับดึงข้อมูลสินค้าจาก API
+        async function fetchProducts() {
+            try {
+                // ใช้ fetch() เพื่อเรียก API
+                const response = await fetch(apiUrl);
+                
+                // ตรวจสอบว่าการเรียก API สำเร็จหรือไม่
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // แปลงข้อมูลที่ได้จาก API ให้อยู่ในรูปแบบ JSON
+                const products = await response.json();
+                
+                // เรียกฟังก์ชันเพื่อแสดงผลข้อมูลสินค้า
+                displayProducts(products);
+                
+            } catch (error) {
+                // จัดการกับข้อผิดพลาดที่เกิดขึ้น
+                console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
+                productList.innerHTML = '<p>ไม่สามารถดึงข้อมูลสินค้าได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง.</p>';
+            }
+        }
+
+        // ฟังก์ชันสำหรับแสดงผลข้อมูลสินค้าบนหน้าเว็บ
+        function displayProducts(products) {
+            // ล้างข้อมูลเก่าใน container
+            productList.innerHTML = '';
+            
+            // วนลูปแสดงสินค้าแต่ละรายการ
+            products.forEach(product => {
+                // สร้าง element div สำหรับ card สินค้า
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                
+                // ใส่ข้อมูลสินค้าลงใน innerHTML ของ card
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.title}">
+                    <h3>${product.title}</h3>
+                    <p>${product.category}</p>
+                    <p class="price">$${product.price}</p>
+                `;
+                
+                // นำ card สินค้าไปใส่ใน container หลัก
+                productList.appendChild(productCard);
+            });
+        }
+
+        // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดเสร็จ
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+    </script>
+</body>
+</html>
